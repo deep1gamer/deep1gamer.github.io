@@ -1,16 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Site 1</title>
+  <title>Ad Gated Task</title>
 </head>
 <body>
-  <h1>Welcome to Site 1</h1>
+  <h1>Watch Ads to Unlock Reward</h1>
 
-  <!-- Replace below with your real Monetag ad code -->
+  <p>Ads watched: <span id="adsWatched">0</span> / 10</p>
+
+  <button id="watchAdBtn">Watch Ad</button>
+  <button id="taskBtn" disabled>Do the Task</button>
+
+  <div class="ad-slot" style="display: none;"></div> <!-- Placeholder -->
+
+  <!-- Simulated Ad Loader -->
   <script type="text/javascript">
-    var monetag = monetag || [];
-    monetag.push({event: "onload", slot: "YOUR_SLOT_ID"});
+    let adCount = parseInt(localStorage.getItem("adsWatched") || "0");
+
+    const adsWatchedDisplay = document.getElementById("adsWatched");
+    const watchAdBtn = document.getElementById("watchAdBtn");
+    const taskBtn = document.getElementById("taskBtn");
+
+    adsWatchedDisplay.textContent = adCount;
+
+    function showAd() {
+      // Simulate triggering a Monetag ad (you must insert your real ad call)
+      // Example only: monetag.push({event: "onload", slot: "YOUR_SLOT_ID"});
+
+      alert("Simulating ad shown"); // Replace with actual Monetag ad trigger
+      adCount++;
+      localStorage.setItem("adsWatched", adCount);
+      adsWatchedDisplay.textContent = adCount;
+
+      if (adCount >= 10) {
+        taskBtn.disabled = false;
+        watchAdBtn.disabled = true;
+      }
+    }
+
+    watchAdBtn.addEventListener("click", showAd);
   </script>
-  <!--script src="https://example.monetag.com/script.js" async></script>-->
 </body>
 </html>
