@@ -1,44 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Ad Gated Task</title>
+    <meta charset="UTF-8">
+    <title>Earn ServCoins</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial; text-align: center; padding: 20px; }
+        button { background: #0088cc; color: white; border: none; padding: 10px 15px; border-radius: 5px; }
+    </style>
 </head>
 <body>
-  <h1>Watch Ads to Unlock Reward</h1>
+    <h1>🪙 Earn ServCoins</h1>
+    <p>Complete tasks to earn coins for your Minecraft server!</p>
+    
+    <button onclick="openOfferwall()">Open Offerwall</button>
+    <button onclick="claimDailyCoins()">Claim Daily Reward (5 Coins)</button>
 
-  <p>Ads watched: <span id="adsWatched">0</span> / 10</p>
+    <script>
+        // Initialize Telegram WebApp
+        const tg = Telegram.WebApp;
+        tg.expand(); // Expand the app to full screen
 
-  <button id="watchAdBtn">Watch Ad</button>
-  <button id="taskBtn" disabled>Do the Task</button>
+        function openOfferwall() {
+            // Replace with your Monetag/offerwall link
+            window.open("https://monetag.com/?p=YOUR_PUBLISHER_ID", "_blank");
+        }
 
-  <div class="ad-slot" style="display: none;"></div> <!-- Placeholder -->
-
-  <!-- Simulated Ad Loader -->
-  <script type="text/javascript">
-    let adCount = parseInt(localStorage.getItem("adsWatched") || "0");
-
-    const adsWatchedDisplay = document.getElementById("adsWatched");
-    const watchAdBtn = document.getElementById("watchAdBtn");
-    const taskBtn = document.getElementById("taskBtn");
-
-    adsWatchedDisplay.textContent = adCount;
-
-    function showAd() {
-      // Simulate triggering a Monetag ad (you must insert your real ad call)
-      // Example only: monetag.push({event: "onload", slot: "YOUR_SLOT_ID"});
-
-      alert("Simulating ad shown"); // Replace with actual Monetag ad trigger
-      adCount++;
-      localStorage.setItem("adsWatched", adCount);
-      adsWatchedDisplay.textContent = adCount;
-
-      if (adCount >= 10) {
-        taskBtn.disabled = false;
-        watchAdBtn.disabled = true;
-      }
-    }
-
-    watchAdBtn.addEventListener("click", showAd);
-  </script>
+        function claimDailyCoins() {
+            // Send data back to the bot
+            tg.sendData(JSON.stringify({
+                action: "claim_daily",
+                userId: tg.initDataUnsafe.user?.id
+            }));
+            tg.close(); // Close the Mini App
+        }
+    </script>
 </body>
 </html>
