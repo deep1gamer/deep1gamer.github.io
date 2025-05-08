@@ -1,72 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Earn ServCoins</title>
+    <title>ServCoin Ads</title>
     <script src="https://cdn.monetag.com/tag.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
+            background: #2c3e50;
+            color: white;
         }
         #ad-container {
             margin: 20px auto;
             width: 300px;
             height: 250px;
-            border: 1px solid #ddd;
+            background: #34495e;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         button {
-            padding: 10px 20px;
-            background: #FFA500;
+            background: #27ae60;
             color: white;
             border: none;
+            padding: 10px 20px;
             border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
+            margin: 10px;
+        }
+        .counter {
+            font-size: 18px;
+            margin: 15px 0;
         }
     </style>
 </head>
 <body>
-    <h2>🪙 Watch Ads to Earn ServCoins</h2>
-    <div id="ad-container"></div>
-    <p>Ads completed: <span id="counter">0</span>/10</p>
+    <h2>🪙 Earn ServCoins</h2>
+    <p>Watch ads to get coins for your Minecraft server</p>
+    
+    <div id="ad-container">
+        <p>Click Start to begin</p>
+    </div>
+    
+    <div class="counter">
+        Ads completed: <span id="counter">0</span>/10
+    </div>
+    
     <button id="start-btn">Start Ads</button>
+    <button id="close-btn" style="background:#e74c3c">Done</button>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const userId = params.get('user_id');
         let adsCompleted = 0;
-
+        const userId = "WEBVIEW_USER"; // Will be replaced by Python
+        
         document.getElementById("start-btn").addEventListener("click", () => {
-            startMonetagAd();
+            startAd();
+        });
+        
+        document.getElementById("close-btn").addEventListener("click", () => {
+            window.pywebview.api.close(adsCompleted * 5); // 5 coins per ad
         });
 
-        function startMonetagAd() {
-            if(adsCompleted >= 10) {
-                rewardUser(50); // Total 50 coins for 10 ads
-                return;
-            }
-
+        function startAd() {
+            if(adsCompleted >= 10) return;
+            
             monetag.startAd({
                 containerId: "ad-container",
-                publisherId: "2882944", // Replace this
-                zoneId: "9263102",           // Replace this
+                publisherId: "YOUR_PUBLISHER_ID", // ← Replace this
+                zoneId: "YOUR_ZONE_ID",           // ← Replace this
+                onStart: () => {
+                    document.getElementById("ad-container").innerHTML = 
+                        "<p>Loading ad...</p>";
+                },
                 onComplete: () => {
                     adsCompleted++;
                     document.getElementById("counter").textContent = adsCompleted;
-                    reportAdCompletion();
-                    setTimeout(startMonetagAd, 1000); // Next ad after 1 sec
+                    
+                    // Report completion to Python
+                    window.pywebview.api.ad_completed(adsCompleted);
+                    
+                    // Auto-load next ad after 2 seconds
+                    if(adsCompleted < 10) {
+                        setTimeout(startAd, 2000);
+                    }
                 }
             });
         }
-
-        function reportAdCompletion() {
-            // Send to your backend
-            fetch(`https://your-server.com/api/ad_complete?user_id=${userId}`, {
-                method: 'POST'
-            });
-        }
-
-        function rewardUser(coins) {
-            // Close
+    </script>
+</body>
+</html>
