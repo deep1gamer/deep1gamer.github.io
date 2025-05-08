@@ -1,82 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Watch Ads</title>
+    <title>Earn ServCoins</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://ligheechoagool.com/88/tag.min.js" data-zone="144456" async data-cfasync="false"></script>
-    <meta name="monetag" content="8aae2fc7bf2308d3a0805871f4478e52">
+    <script src="https://cdn.monetag.com/tag.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .ad-container { margin: 20px auto; width: 300px; height: 250px; border: 1px solid #ddd; }
-        button { padding: 10px 15px; background: #0088cc; color: white; border: none; border-radius: 5px; }
+        body { 
+            font-family: Arial; 
+            text-align: center; 
+            padding: 20px;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        #monetag-ad-container {
+            margin: 20px auto;
+            width: 300px;
+            height: 250px;
+            border: 1px solid var(--tg-theme-hint-color, #999999);
+        }
+        button {
+            padding: 10px 15px;
+            background: var(--tg-theme-button-color, #0088cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
-    <h2>Watch Ads to Earn ServCoins</h2>
-    
-    <div class="ad-container" id="ad-display">
-        <p>Ad will load shortly...</p>
-    </div>
-    
-    <p>Ads watched: <span id="counter">0</span>/10</p>
-    <p>Coins to earn: <span id="coins">10</span></p>
+    <h2>🪙 Earn ServCoins</h2>
+    <div id="monetag-ad-container"></div>
+    <p id="status">Click below to start ads</p>
+    <button onclick="startMonetagAds()">Start Watching Ads</button>
 
     <script>
-        const tg = window.Telegram.WebApp;
+        const tg = Telegram.WebApp;
+        tg.expand(); // Use full window height
+        
+        let adsCompleted = 0;
         const params = new URLSearchParams(window.location.search);
-        const adType = params.get('type');
-        const userId = params.get('user_id');
-        
-        let adsWatched = 0;
-        
-        function showAd() {
-            if(adsWatched >= 10) {
-                document.getElementById('ad-display').innerHTML = 
-                    "<h3>All done! 10 coins earned!</h3>";
-                return;
-            }
+        const userId = params.get('user_id') || tg.initDataUnsafe.user?.id;
+
+        function startMonetagAds() {
+            document.getElementById('status').textContent = "Loading ad...";
             
-            // Simulate different ad types
-            const adContent = {
-                'push': '<h3>Push Notification Ad</h3><p>Click to continue</p>',
-                'vignette': '<h3>Vignette Banner</h3><img src="banner.jpg" width="300">',
-                'native': '<h3>Native Ad</h3><p>Sponsored content</p>',
-                'inpage': '<h3>In-Page Ad</h3><button onclick="adComplete()">View</button>',
-                'popunder': '<h3>Popunder Ad</h3><p>Click anywhere</p>'
-            };
-            
-            document.getElementById('ad-display').innerHTML = 
-                adContent[adType] || adContent['native'];
-            
-            // For popunder ads, any click counts
-            if(adType === 'popunder') {
-                document.addEventListener('click', adComplete);
-            }
-        }
-        
-        function adComplete() {
-            adsWatched++;
-            document.getElementById('counter').textContent = adsWatched;
-            
-            // Remove popunder listener after first click
-            if(adType === 'popunder') {
-                document.removeEventListener('click', adComplete);
-            }
-            
-            // Report to backend
-            fetch(`http://localhost:5001/add_coins`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: userId, coins: 1})
+            monetag.startAd({
+                containerId: "monetag-ad-container",
+                publisherId: "YOUR_MONETAG_PUBLISHER_ID",
+                adUnitId: "YOUR_AD_UNIT_ID",
+                onStart: () => {
+                    document.getElementById('status').textContent = "Ad started - please watch";
+                },
+                onComplete: () => {
+                    adsCompleted++;
+                    rewardUser(5); // 5 coins per ad
+                    
+                    if(adsCompleted < 10) {
+                        document.getElementById('status').textContent = 
+                            `Ad ${adsCompleted}/10 completed. ${10-adsCompleted} remaining`;
+                        setTimeout(startMonetagAds, 1500);
+                    } else {
+                        document.getElementById('status').textContent = 
+                            "✅ 50 ServCoins earned!";
+                        tg.close(); // Close Mini App automatically
+                    }
+                }
             });
-            
-            // Show next ad after delay
-            setTimeout(showAd, 2000);
         }
-        
-        // Initialize
-        tg.expand();
-        showAd();
+
+        function rewardUser(coins) {
+            // Method 1: Send data back to main app
+            if(tg.platform !== "unknown") {
+                tg.sendData(JSON.stringify({
+                    action: "add_coins",
+                    userId: userId,
+                    coins: coins
+                }));
+            }
+            
+            // Method 2: Call your backend API
+            fetch("https://your-server.com/api/add_coins", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: userId, coins: coins })
+            });
+        }
     </script>
 </body>
 </html>
