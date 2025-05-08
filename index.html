@@ -1,76 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Earn ServCoins</title>
-    <script src="https://cdn.monetag.com/tag.js"></script>
+    <title>Watch Ads</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        #monetag-ad { width: 300px; height: 250px; margin: 20px auto; }
-        .ad-container { text-align: center; padding: 20px; }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .ad-container { margin: 20px auto; width: 300px; height: 250px; border: 1px solid #ddd; }
+        button { padding: 10px 15px; background: #0088cc; color: white; border: none; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <div class="ad-container">
-        <h2>Watch Ads to Earn ServCoins</h2>
-        <div id="monetag-ad"></div>
-        <p id="status">Click 'Start' to begin watching ads</p>
-        <button onclick="initAds()">Start Watching Ads</button>
+    <h2>Watch Ads to Earn ServCoins</h2>
+    
+    <div class="ad-container" id="ad-display">
+        <p>Ad will load shortly...</p>
     </div>
+    
+    <p>Ads watched: <span id="counter">0</span>/10</p>
+    <p>Coins to earn: <span id="coins">10</span></p>
 
     <script>
+        const tg = window.Telegram.WebApp;
+        const params = new URLSearchParams(window.location.search);
+        const adType = params.get('type');
+        const userId = params.get('user_id');
+        
         let adsWatched = 0;
-        const userId = "USER123"; // Replace with actual user ID from your system
-
-        function initAds() {
-            document.getElementById('status').textContent = "Loading ads...";
+        
+        function showAd() {
+            if(adsWatched >= 10) {
+                document.getElementById('ad-display').innerHTML = 
+                    "<h3>All done! 10 coins earned!</h3>";
+                return;
+            }
             
-            monetag.startAd({
-                containerId: "monetag-ad",
-                publisherId: "YOUR_MONETAG_PUBLISHER_ID",
-                onStart: function() {
-                    document.getElementById('status').textContent = "Ad started - please watch";
-                },
-                onComplete: function() {
-                    adsWatched++;
-                    logAdCompletion(userId);
-                    document.getElementById('status').textContent = 
-                        `Ad ${adsWatched}/10 completed! ${10-adsWatched} remaining`;
-                    
-                    if(adsWatched < 10) {
-                        setTimeout(initAds, 1500); // Load next ad after delay
-                    } else {
-                        document.getElementById('status').textContent = 
-                            "Complete! 20 ServCoins earned!";
-                        awardCoins(userId, 20);
-                    }
-                }
-            });
+            // Simulate different ad types
+            const adContent = {
+                'push': '<h3>Push Notification Ad</h3><p>Click to continue</p>',
+                'vignette': '<h3>Vignette Banner</h3><img src="banner.jpg" width="300">',
+                'native': '<h3>Native Ad</h3><p>Sponsored content</p>',
+                'inpage': '<h3>In-Page Ad</h3><button onclick="adComplete()">View</button>',
+                'popunder': '<h3>Popunder Ad</h3><p>Click anywhere</p>'
+            };
+            
+            document.getElementById('ad-display').innerHTML = 
+                adContent[adType] || adContent['native'];
+            
+            // For popunder ads, any click counts
+            if(adType === 'popunder') {
+                document.addEventListener('click', adComplete);
+            }
         }
-
-        function logAdCompletion(userId) {
-            // Send to your tracking API
-            fetch('https://your-api.com/log_ad', {
+        
+        function adComplete() {
+            adsWatched++;
+            document.getElementById('counter').textContent = adsWatched;
+            
+            // Remove popunder listener after first click
+            if(adType === 'popunder') {
+                document.removeEventListener('click', adComplete);
+            }
+            
+            // Report to backend
+            fetch(`http://localhost:5001/add_coins`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    user_id: userId,
-                    ad_count: adsWatched,
-                    coins: 2 // 2 coins per ad
-                })
+                body: JSON.stringify({user_id: userId, coins: 1})
             });
+            
+            // Show next ad after delay
+            setTimeout(showAd, 2000);
         }
-
-        function awardCoins(userId, amount) {
-            // Connect to Minecraft Server Manager
-            fetch('https://your-minecraft-app.com/api/add_coins', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    user_id: userId,
-                    coins: amount,
-                    source: "monetag_ads"
-                })
-            });
-        }
+        
+        // Initialize
+        tg.expand();
+        showAd();
     </script>
 </body>
 </html>
