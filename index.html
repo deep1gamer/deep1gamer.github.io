@@ -2,92 +2,71 @@
 <html>
 <head>
     <title>Earn ServCoins</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <meta name="monetag" content="8aae2fc7bf2308d3a0805871f4478e52">
-    <script src="https://ligheechoagool.com/88/tag.min.js" data-zone="144456" async data-cfasync="false"></script>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.monetag.com https://deep1gamer.github.io/">
     <script src="https://cdn.monetag.com/tag.js"></script>
     <style>
-        body { 
-            font-family: Arial; 
-            text-align: center; 
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
             padding: 20px;
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
+            max-width: 600px;
+            margin: 0 auto;
         }
-        #monetag-ad-container {
+        #ad-container {
             margin: 20px auto;
             width: 300px;
             height: 250px;
-            border: 1px solid var(--tg-theme-hint-color, #999999);
+            border: 1px solid #ddd;
         }
         button {
-            padding: 10px 15px;
-            background: var(--tg-theme-button-color, #0088cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            padding: 10px 20px;
+            background: #FFA500;
+            color: white;
             border: none;
             border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h2>🪙 Earn ServCoins</h2>
-    <div id="monetag-ad-container"></div>
-    <p id="status">Click below to start ads</p>
-    <button onclick="startMonetagAds()">Start Watching Ads</button>
+    <h2>🪙 Watch Ads to Earn ServCoins</h2>
+    <div id="ad-container"></div>
+    <p>Ads completed: <span id="counter">0</span>/10</p>
+    <button id="start-btn">Start Ads</button>
 
     <script>
-        const tg = Telegram.WebApp;
-        tg.expand(); // Use full window height
-        
-        let adsCompleted = 0;
         const params = new URLSearchParams(window.location.search);
-        const userId = params.get('user_id') || tg.initDataUnsafe.user?.id;
+        const userId = params.get('user_id');
+        let adsCompleted = 0;
 
-        function startMonetagAds() {
-            document.getElementById('status').textContent = "Loading ad...";
-            
+        document.getElementById("start-btn").addEventListener("click", () => {
+            startMonetagAd();
+        });
+
+        function startMonetagAd() {
+            if(adsCompleted >= 10) {
+                rewardUser(50); // Total 50 coins for 10 ads
+                return;
+            }
+
             monetag.startAd({
-                containerId: "monetag-ad-container",
-                publisherId: "YOUR_MONETAG_PUBLISHER_ID",
-                adUnitId: "YOUR_AD_UNIT_ID",
-                onStart: () => {
-                    document.getElementById('status').textContent = "Ad started - please watch";
-                },
+                containerId: "ad-container",
+                publisherId: "YOUR_PUBLISHER_ID", // Replace this
+                zoneId: "YOUR_ZONE_ID",           // Replace this
                 onComplete: () => {
                     adsCompleted++;
-                    rewardUser(5); // 5 coins per ad
-                    
-                    if(adsCompleted < 10) {
-                        document.getElementById('status').textContent = 
-                            `Ad ${adsCompleted}/10 completed. ${10-adsCompleted} remaining`;
-                        setTimeout(startMonetagAds, 1500);
-                    } else {
-                        document.getElementById('status').textContent = 
-                            "✅ 50 ServCoins earned!";
-                        tg.close(); // Close Mini App automatically
-                    }
+                    document.getElementById("counter").textContent = adsCompleted;
+                    reportAdCompletion();
+                    setTimeout(startMonetagAd, 1000); // Next ad after 1 sec
                 }
             });
         }
 
-        function rewardUser(coins) {
-            // Method 1: Send data back to main app
-            if(tg.platform !== "unknown") {
-                tg.sendData(JSON.stringify({
-                    action: "add_coins",
-                    userId: userId,
-                    coins: coins
-                }));
-            }
-            
-            // Method 2: Call your backend API
-            fetch("https://your-server.com/api/add_coins", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id: userId, coins: coins })
+        function reportAdCompletion() {
+            // Send to your backend
+            fetch(`https://your-server.com/api/ad_complete?user_id=${userId}`, {
+                method: 'POST'
             });
         }
-    </script>
-</body>
-</html>
+
+        function rewardUser(coins) {
+            // Close
