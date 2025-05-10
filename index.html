@@ -1,94 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ServCoin Ads</title>
-    <script src="https://cdn.monetag.com/tag.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background: #2c3e50;
-            color: white;
+    <title>Watch Ad to Unlock Server</title>
+    <script>
+        function loadAdQuackAd() {
+            // AdQuack Popunder Script
+            const script = document.createElement('script');
+            script.src = 'https://cdn.adquack.com/sdk.js';
+            script.onload = () => {
+                window.adquack = window.adquack || { cmd: [] };
+                window.adquack.cmd.push(() => {
+                    adquack.load({
+                        id: 'YOUR_ADQUACK_PUBLISHER_ID', // Replace with yours
+                        type: 'popunder'
+                    });
+                    // Track successful ad load
+                    localStorage.setItem('adWatched', 'true');
+                    if (window.pywebview) {
+                        window.pywebview.api.adCompleted(); // Notify Python
+                    }
+                });
+            };
+            document.body.appendChild(script);
         }
-        #ad-container {
-            margin: 20px auto;
-            width: 300px;
-            height: 250px;
-            background: #34495e;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        button {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px;
-        }
-        .counter {
-            font-size: 18px;
-            margin: 15px 0;
-        }
-    </style>
+    </script>
 </head>
 <body>
-    <h2>🪙 Earn ServCoins</h2>
-    <p>Watch ads to get coins for your Minecraft server</p>
-    
-    <div id="ad-container">
-        <p>Click Start to begin</p>
-    </div>
-    
-    <div class="counter">
-        Ads completed: <span id="counter">0</span>/10
-    </div>
-    
-    <button id="start-btn">Start Ads</button>
-    <button id="close-btn" style="background:#e74c3c">Done</button>
+    <h1>Click Below to Watch Ad & Unlock Server</h1>
+    <button onclick="loadAdQuackAd()">Watch Ad Now</button>
 
+    <!-- Optional: Auto-close after ad -->
     <script>
-        let adsCompleted = 0;
-        const userId = "WEBVIEW_USER"; // Will be replaced by Python
-        
-        document.getElementById("start-btn").addEventListener("click", () => {
-            startAd();
-        });
-        
-        document.getElementById("close-btn").addEventListener("click", () => {
-            window.pywebview.api.close(adsCompleted * 5); // 5 coins per ad
-        });
-
-        function startAd() {
-            if(adsCompleted >= 10) return;
-            
-            monetag.startAd({
-                containerId: "ad-container",
-                publisherId: "YOUR_PUBLISHER_ID", // ← Replace this
-                zoneId: "YOUR_ZONE_ID",           // ← Replace this
-                onStart: () => {
-                    document.getElementById("ad-container").innerHTML = 
-                        "<p>Loading ad...</p>";
-                },
-                onComplete: () => {
-                    adsCompleted++;
-                    document.getElementById("counter").textContent = adsCompleted;
-                    
-                    // Report completion to Python
-                    window.pywebview.api.ad_completed(adsCompleted);
-                    
-                    // Auto-load next ad after 2 seconds
-                    if(adsCompleted < 10) {
-                        setTimeout(startAd, 2000);
-                    }
-                }
-            });
-        }
+        setInterval(() => {
+            if (localStorage.getItem('adWatched') === 'true') {
+                window.close(); // Close if in PyWebView
+            }
+        }, 1000);
     </script>
 </body>
 </html>
