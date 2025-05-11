@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script>
-    // HilltopAds Popunder Script
-    (function() {
-        var script = document.createElement('script');
-        script.src = 'https://htpublisher.com/js/6341905.js'; // Replace with your zone ID
-        script.onload = function() {
-            // Track successful ad load (optional)
-            localStorage.setItem('adWatched', 'true');
-        };
-        document.body.appendChild(script);
-    })();
-</script>
     <title>Minecraft Server Rewards | Watch Ad to Unlock</title>
     <meta name="referrer" content="no-referrer-when-downgrade" />
+    <!-- HilltopAds Script -->
+    <script src="https://htpublisher.com/js/loader.js"></script>
+    <script>
+        window.hilltopads = window.hilltopads || [];
+        hilltopads.push({
+            zone: 'YOUR_ZONE_ID',  // REPLACE WITH YOUR ACTUAL ZONE ID
+            type: 'popunder'      // Change to 'banner' if using display ads
+        });
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,24 +36,29 @@
             font-size: 18px;
             cursor: pointer;
             margin: 20px 0;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #3e8e41;
+            transform: scale(1.05);
         }
         .features {
             text-align: left;
             margin: 30px 0;
         }
+        .footer {
+            margin-top: 40px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <div class="footer">
-    <a href="/terms.html">Terms of Service</a> | 
-    <a href="/privacy.html">Privacy Policy</a> | 
-    <a href="/faq.html">FAQ</a>
-    </div>
     <div class="container">
         <h1>Unlock Free Minecraft Servers</h1>
         <p>Watch a short ad to get 24-hour server access</p>
         
-        <button class="btn">Watch Ad Now</button>
+        <!-- Updated Button with HilltopAds Trigger -->
+        <button class="btn" onclick="showAdAndUnlock()">Watch Ad Now</button>
         
         <div class="features">
             <h3>How It Works:</h3>
@@ -67,7 +69,44 @@
             </ul>
         </div>
         
-        <p><small>By proceeding, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></small></p>
+        <p><small>By proceeding, you agree to our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a></small></p>
     </div>
+
+    <div class="footer">
+        <a href="terms.html">Terms of Service</a> | 
+        <a href="privacy.html">Privacy Policy</a> | 
+        <a href="faq.html">FAQ</a>
+    </div>
+
+    <script>
+        function showAdAndUnlock() {
+            try {
+                // Trigger HilltopAds
+                hilltopads.showAd();
+                
+                // Track in localStorage
+                localStorage.setItem('adWatched', 'true');
+                localStorage.setItem('adWatchTime', new Date().toISOString());
+                
+                // Show confirmation
+                alert("Thank you! Your server will unlock after ad completion.");
+                
+                // Optional: Redirect after ad
+                setTimeout(function() {
+                    window.location.href = "unlock.html"; // Create this page
+                }, 3000);
+                
+            } catch (e) {
+                console.error("Ad error:", e);
+                alert("Ad failed to load. Please disable ad-blocker and try again.");
+            }
+        }
+        
+        // Check if ad was already watched
+        if (localStorage.getItem('adWatched')) {
+            document.querySelector('.btn').textContent = "Server Unlocked!";
+            document.querySelector('.btn').style.background = "#2196F3";
+        }
+    </script>
 </body>
 </html>
