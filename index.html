@@ -1,43 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Watch Ad to Unlock Server</title>
-    <meta name="60e83951f406196059a2d92f9da171c423fac0fa" content="60e83951f406196059a2d92f9da171c423fac0fa" />
+    <title>Minecraft Server Rewards | Watch Ad to Unlock</title>
     <meta name="referrer" content="no-referrer-when-downgrade" />
-    <script>
-        function loadAdQuackAd() {
-            // AdQuack Popunder Script
-            const script = document.createElement('script');
-            script.src = 'https://cdn.adquack.com/sdk.js';
-            script.onload = () => {
-                window.adquack = window.adquack || { cmd: [] };
-                window.adquack.cmd.push(() => {
-                    adquack.load({
-                        id: 'cw0PW6j9g0SMZ0fKbqU08g', // Replace with yours
-                        type: 'popunder'
-                    });
-                    // Track successful ad load
-                    localStorage.setItem('adWatched', 'true');
-                    if (window.pywebview) {
-                        window.pywebview.api.adCompleted(); // Notify Python
-                    }
-                });
-            };
-            document.body.appendChild(script);
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: #f5f5f5;
         }
-    </script>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+        .features {
+            text-align: left;
+            margin: 30px 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Click Below to Watch Ad & Unlock Server</h1>
-    <button onclick="loadAdQuackAd()">Watch Ad Now</button>
-
-    <!-- Optional: Auto-close after ad -->
-    <script>
-        setInterval(() => {
-            if (localStorage.getItem('adWatched') === 'true') {
-                window.close(); // Close if in PyWebView
-            }
-        }, 1000);
-    </script>
+    <div class="container">
+        <h1>Unlock Free Minecraft Servers</h1>
+        <p>Watch a short ad to get 24-hour server access</p>
+        
+        <button class="btn">Watch Ad Now</button>
+        
+        <div class="features">
+            <h3>How It Works:</h3>
+            <ul>
+                <li>1. Click "Watch Ad Now"</li>
+                <li>2. Complete the ad view</li>
+                <li>3. Receive your server details via email</li>
+            </ul>
+        </div>
+        
+        <p><small>By proceeding, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></small></p>
+    </div>
 </body>
 </html>
