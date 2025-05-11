@@ -1,56 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Watch Ad to Unlock</title>
+    <title>Ad Viewer</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
+        body { font-family: Arial, text-align: center; padding: 20px; }
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            padding: 15px 25px; 
+            border: none; 
+            font-size: 16px; 
+            cursor: pointer; 
+            margin-top: 20px;
         }
-        #ad-container {
-            margin: 30px auto;
-            max-width: 800px;
-        }
-        button {
-            background: #4CAF50;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-        }
+        #status { margin: 20px; color: #666; }
     </style>
 </head>
 <body>
-    <h1>Watch an Ad to Continue</h1>
+    <h2>Watch an Ad to Continue</h2>
+    <div id="status">Click below to load the ad</div>
     
-    <!-- HilltopAds Video Container -->
-    <div id="ad-container">
-        <!-- Ad will load here -->
+    <!-- Method 1: Direct Link (works when iframes fail) -->
+    <button onclick="window.open('https://hilltopads.com/redirect?zoneid=YOUR_ZONE_ID', '_blank')">
+        Open Ad in New Tab
+    </button>
+    
+    <!-- Method 2: Iframe Fallback -->
+    <div id="ad-container" style="margin: 20px auto; display: none;">
+        <iframe src="about:blank" id="ad-frame" width="728" height="90"></iframe>
     </div>
-    
-    <button onclick="loadAd()">Show Ad</button>
 
     <script>
+        // Try loading iframe first
         function loadAd() {
-            // Clear previous ad
-            document.getElementById('ad-container').innerHTML = '';
+            const container = document.getElementById('ad-container');
+            const frame = document.getElementById('ad-frame');
             
-            // Create iframe for video ad
-            const iframe = document.createElement('iframe');
-            iframe.src = 'https://hilltopads.com/video?zoneid=6341905-6341906';
-            iframe.width = '800';
-            iframe.height = '450';
-            iframe.frameBorder = '0';
-            iframe.allowFullscreen = true;
-            
-            // Append to container
-            document.getElementById('ad-container').appendChild(iframe);
-            
-            // Track completion
-            localStorage.setItem('adWatched', 'true');
+            try {
+                frame.src = 'https://hilltopads.com/video?zoneid=YOUR_ZONE_ID';
+                container.style.display = 'block';
+                document.getElementById('status').textContent = "Ad loading...";
+                
+                frame.onload = function() {
+                    localStorage.setItem('adWatched', 'true');
+                    document.getElementById('status').textContent = "Ad watched!";
+                };
+                
+            } catch (e) {
+                document.getElementById('status').textContent = "Using direct link instead...";
+            }
         }
+        
+        // Attempt both methods
+        loadAd();
     </script>
 </body>
 </html>
