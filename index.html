@@ -53,21 +53,18 @@
             margin-bottom: 15px;
         }
     </style>
-    
-    <!-- HilltopAds Provided Script -->
-    <script src="https://ruralhistorian.com/dTm.Fezvd/GcNyvJZXGjUE/BeNmV9lu_ZTUNlUkUPlTrYRzMNBDuEJ5_MrDfUttvNcjzM/0CMvTNkFwrN/gr"></script>
 </head>
 <body>
     <div class="container">
         <h1>Unlock Free Minecraft Servers</h1>
         <p>Watch a short ad to get 24-hour server access</p>
-        
+
         <div id="adblock-warning">
             <p>⚠️ Please disable your ad blocker to unlock the server!</p>
         </div>
-        
+
         <button class="btn" id="ad-button">Watch Ad Now</button>
-        
+
         <div class="features">
             <h3>How It Works:</h3>
             <ul>
@@ -76,15 +73,33 @@
                 <li>3. Receive your server details</li>
             </ul>
         </div>
-        
+
         <p><small>By proceeding, you agree to our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a></small></p>
     </div>
 
     <div class="footer">
-        <a href="terms.html">Terms of Service</a> | 
-        <a href="privacy.html">Privacy Policy</a> | 
+        <a href="terms.html">Terms of Service</a> |
+        <a href="privacy.html">Privacy Policy</a> |
         <a href="faq.html">FAQ</a>
     </div>
+
+    <!-- HilltopAds Script Placeholder -->
+    <!-- Replace with actual HilltopAds script or direct URL -->
+    <script>
+        // Simulate hilltopAdTrigger using Direct URL logic
+        window.hilltopAdTrigger = function () {
+            const adWin = window.open('https://your-hilltopads-direct-url.com', '_blank'); // <-- REPLACE THIS URL
+            if (adWin) {
+                setTimeout(() => {
+                    adWin.close();
+                    trackAd();
+                    alert("Thank you! Your server is now unlocked.");
+                }, 5000); // Simulated 5-second ad watch
+            } else {
+                alert("Popup blocked. Please allow popups or disable your ad blocker.");
+            }
+        };
+    </script>
 
     <script>
         // Ad Blocker Detection
@@ -94,9 +109,9 @@
                 testAd.innerHTML = '&nbsp;';
                 testAd.className = 'adsbox';
                 document.body.appendChild(testAd);
-                
+
                 setTimeout(() => {
-                    if(testAd.offsetHeight === 0) {
+                    if (testAd.offsetHeight === 0) {
                         document.getElementById('adblock-warning').style.display = 'block';
                         resolve(true);
                     } else {
@@ -111,56 +126,50 @@
         function trackAd() {
             localStorage.setItem('adWatched', 'true');
             localStorage.setItem('adWatchTime', new Date().toISOString());
-            
-            // Update UI
+
             const btn = document.getElementById('ad-button');
             btn.textContent = "Server Unlocked!";
             btn.classList.add('unlocked');
-            btn.onclick = function() {
+            btn.onclick = function () {
                 window.location.href = "unlock.html";
             };
-            
-            // Optional: Send to your backend
+
             fetch('/track-ad', {
                 method: 'POST',
-                body: JSON.stringify({adCompleted: true}),
-                headers: {'Content-Type': 'application/json'}
+                body: JSON.stringify({ adCompleted: true }),
+                headers: { 'Content-Type': 'application/json' }
             }).catch(e => console.log('Tracking failed:', e));
         }
 
         // Initialize
         async function init() {
             const adBlocked = await checkAdBlock();
-            
-            document.getElementById('ad-button').onclick = function() {
-                if(adBlocked) {
-                    alert("Please disable your ad blocker to continue");
+
+            document.getElementById('ad-button').onclick = function () {
+                if (adBlocked) {
+                    alert("Please disable your ad blocker to continue.");
                     return;
                 }
-                
+
                 try {
-                    // HilltopAds function from their script
-                    if(typeof window.hilltopAdTrigger === 'function') {
+                    if (typeof window.hilltopAdTrigger === 'function') {
                         window.hilltopAdTrigger();
-                        trackAd();
-                        alert("Thank you! Processing your server access...");
                     } else {
                         throw new Error("Ad system not loaded");
                     }
-                } catch(e) {
+                } catch (e) {
                     console.error("Ad error:", e);
                     alert("Failed to load ad. Please try again later.");
                 }
             };
-            
-            // Check if already watched
-            if(localStorage.getItem('adWatched')) {
-                trackAd(); // Will update UI to unlocked state
+
+            if (localStorage.getItem('adWatched')) {
+                trackAd();
             }
         }
 
-        // Start the ad system
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
+
