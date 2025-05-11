@@ -3,17 +3,6 @@
 <head>
     <title>Minecraft Server Rewards | Watch Ad to Unlock</title>
     <meta name="referrer" content="no-referrer-when-downgrade" />
-    <!-- HilltopAds Script -->
-    <script src="https://htpublisher.com/js/loader.js"></script>
-    <script src="/b0bed359d2.php"></script> 
-    <!--script src="https://ruralhistorian.com/dcmHFaz/d.GmNQvgZVGUUK/xeJmY9RuhZtU/l-k/PmTdYTzgN/DyEC5tMYDVU/tmNxjyM/0AMqTVk/wvNagY"></script-->
-    <script>
-        window.hilltopads = window.hilltopads || [];
-        hilltopads.push({
-            zone: '6342013',  // REPLACE WITH YOUR ACTUAL ZONE ID
-            type: 'popunder'      // Change to 'banner' if using display ads
-        });
-    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,6 +33,9 @@
             background: #3e8e41;
             transform: scale(1.05);
         }
+        .btn.unlocked {
+            background: #2196F3;
+        }
         .features {
             text-align: left;
             margin: 30px 0;
@@ -52,6 +44,10 @@
             margin-top: 40px;
             font-size: 14px;
         }
+        #adblock-warning {
+            color: red;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -59,8 +55,17 @@
         <h1>Unlock Free Minecraft Servers</h1>
         <p>Watch a short ad to get 24-hour server access</p>
         
-        <!-- Updated Button with HilltopAds Trigger -->
-        <button class="btn" onclick="showAdAndUnlock()">Watch Ad Now</button>
+        <div id="adblock-warning">
+            <p>Please disable your ad blocker to continue!</p>
+        </div>
+        
+        <!-- Using direct link as fallback -->
+        <a href="https://hilltopads.com/redirect?zoneid=6342013" 
+           id="ad-link" 
+           target="_blank"
+           onclick="trackAd()">
+           <button class="btn" id="ad-button">Watch Ad Now</button>
+        </a>
         
         <div class="features">
             <h3>How It Works:</h3>
@@ -71,8 +76,7 @@
             </ul>
         </div>
         
-        <p><small>By proceeding, you agree to our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a>
-        </small></p>
+        <p><small>By proceeding, you agree to our <a href="terms.html">Terms</a> and <a href="privacy.html">Privacy Policy</a></small></p>
     </div>
 
     <div class="footer">
@@ -81,35 +85,82 @@
         <a href="faq.html">FAQ</a>
     </div>
 
+    <!-- Load HilltopAds script dynamically -->
     <script>
-        function showAdAndUnlock() {
-            try {
-                // Trigger HilltopAds
-                hilltopads.showAd();
+        // Check for ad blockers
+        function checkAdBlock() {
+            return new Promise((resolve) => {
+                const testAd = document.createElement('div');
+                testAd.innerHTML = '&nbsp;';
+                testAd.className = 'adsbox';
+                document.body.appendChild(testAd);
                 
-                // Track in localStorage
-                localStorage.setItem('adWatched', 'true');
-                localStorage.setItem('adWatchTime', new Date().toISOString());
-                
-                // Show confirmation
-                alert("Thank you! Your server will unlock after ad completion.");
-                
-                // Optional: Redirect after ad
-                setTimeout(function() {
-                    window.location.href = "unlock.html"; // Create this page
-                }, 3000);
-                
-            } catch (e) {
-                console.error("Ad error:", e);
-                alert("Ad failed to load. Please disable ad-blocker and try again.");
+                setTimeout(() => {
+                    if(testAd.offsetHeight === 0) {
+                        document.getElementById('adblock-warning').style.display = 'block';
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                    document.body.removeChild(testAd);
+                }, 100);
+            });
+        }
+
+        // Track ad completion
+        function trackAd() {
+            localStorage.setItem('adWatched', 'true');
+            localStorage.setItem('adWatchTime', new Date().toISOString());
+            
+            // Fallback tracking
+            fetch('https://your-tracking-endpoint.com/log?ad=completed', {
+                mode: 'no-cors'
+            }).catch(() => {});
+        }
+
+        // Main initialization
+        async function init() {
+            const isBlocked = await checkAdBlock();
+            
+            if(!isBlocked) {
+                // Only load HilltopAds if no ad blocker detected
+                const script = document.createElement('script');
+                script.src = 'https://htpublisher.com/js/loader.js';
+                script.onload = function() {
+                    window.hilltopads = window.hilltopads || [];
+                    hilltopads.push({
+                        zone: '6342013',
+                        type: 'popunder'
+                    });
+                    
+                    // Replace direct link with script trigger
+                    document.getElementById('ad-link').href = '#';
+                    document.getElementById('ad-link').onclick = function(e) {
+                        e.preventDefault();
+                        hilltopads.showAd();
+                        trackAd();
+                        alert("Thank you! Your server will unlock after ad completion.");
+                        setTimeout(function() {
+                            window.location.href = "unlock.html";
+                        }, 3000);
+                    };
+                };
+                document.head.appendChild(script);
+            }
+
+            // Check if already watched
+            if (localStorage.getItem('adWatched')) {
+                const btn = document.getElementById('ad-button');
+                btn.textContent = "Server Unlocked!";
+                btn.classList.add('unlocked');
+                btn.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = "unlock.html";
+                };
             }
         }
-        
-        // Check if ad was already watched
-        if (localStorage.getItem('adWatched')) {
-            document.querySelector('.btn').textContent = "Server Unlocked!";
-            document.querySelector('.btn').style.background = "#2196F3";
-        }
+
+        init();
     </script>
 </body>
 </html>
