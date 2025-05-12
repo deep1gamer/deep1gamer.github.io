@@ -1,58 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ad Viewer</title>
+    <title>Watch Ad to Unlock</title>
+    <!-- HilltopAds Script -->
+    <script src="https://htpublisher.com/js/loader.js"></script>
+    <script>
+        window.hilltopads = window.hilltopads || [];
+        hilltopads.push({ zone: '6342013', type: 'popunder' });
+    </script>
     <style>
         body { font-family: Arial, text-align: center; padding: 20px; }
-        button { 
-            background: #4CAF50; 
-            color: white; 
-            padding: 15px 25px; 
-            border: none; 
-            font-size: 16px; 
-            cursor: pointer; 
-            margin-top: 20px;
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            font-size: 18px;
+            margin-top: 50px;
         }
-        #status { margin: 20px; color: #666; }
     </style>
 </head>
 <body>
-    <h2>Watch an Ad to Continue</h2>
-    <div id="status">Click below to load the ad</div>
+    <h2>Click below to watch an ad</h2>
     
-    <!-- Method 1: Direct Link (works when iframes fail) -->
-    <button onclick="window.open('https://hilltopads.com/redirect?zoneid=6342013', '_blank')">
-        Open Ad in New Tab
+    <!-- Ad Trigger Button -->
+    <button onclick="hilltopads.showAd()">
+        Watch Ad Now
     </button>
     
-    <!-- Method 2: Iframe Fallback -->
-    <div id="ad-container" style="margin: 20px auto; display: none;">
-        <iframe src="about:blank" id="ad-frame" width="728" height="90"></iframe>
-    </div>
-
+    <!-- Simple Tracking -->
     <script>
-        // Try loading iframe first
-        function loadAd() {
-            const container = document.getElementById('ad-container');
-            const frame = document.getElementById('ad-frame');
-            
-            try {
-                frame.src = 'https://hilltopads.com/video?zoneid=YOUR_ZONE_ID';
-                container.style.display = 'block';
-                document.getElementById('status').textContent = "Ad loading...";
-                
-                frame.onload = function() {
-                    localStorage.setItem('adWatched', 'true');
-                    document.getElementById('status').textContent = "Ad watched!";
-                };
-                
-            } catch (e) {
-                document.getElementById('status').textContent = "Using direct link instead...";
-            }
-        }
-        
-        // Attempt both methods
-        loadAd();
+        localStorage.setItem('adWatched', 'true');
     </script>
 </body>
 </html>
