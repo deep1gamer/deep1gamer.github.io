@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="monetag" content="dc0e36df132dcf49abd4bfd997ba1965">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Ad-Supported Site</title>
+    <title>Region-Specific Ad Website</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,49 +18,98 @@
             border: 1px solid #ddd;
             text-align: center;
             min-height: 250px;
+            background-color: #f9f9f9;
         }
         .content {
             margin: 20px 0;
             line-height: 1.6;
         }
+        .no-ad-message {
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
-    <h1>Welcome to My Website</h1>
+    <h1>Welcome to My Region-Specific Ad Website</h1>
     
-    <div class="ad-container">
-        <!-- Monetag Ad Slot - Header -->
-        <div id="monetag_ad_1"></div>
+    <div class="content">
+        <p>This website shows ads only to visitors from specific regions. Visitors from other regions will see alternative content.</p>
+    </div>
+    
+    <div class="ad-container" id="ad-region-check">
+        <div class="no-ad-message">Checking your region...</div>
     </div>
     
     <div class="content">
-        <p>This is some sample content on my website. Visitors will see ads that help support the site.</p>
-        <p>More interesting content goes here...</p>
-    </div>
-    
-    <div class="ad-container">
-        <!-- Monetag Ad Slot - Footer -->
-        <div id="monetag_ad_2"></div>
+        <h2>More Content</h2>
+        <p>Additional content that all visitors see regardless of their region.</p>
     </div>
 
     <!-- Monetag Ad Script -->
     <script src="https://ligheechoagool.com/88/tag.min.js" data-zone="146991" async data-cfasync="false"></script>
     <script src="https://s.monetag.com/loader.js"></script>
+    
+    <!-- Region detection and ad loading script -->
     <script>
-        // Initialize Monetag ads
-        monetag.adUnit({
-            id: "monetag_ad_1",
-            pid: "2894662", // Replace with your Monetag publisher ID
-            type: "banner",
-            format: "728x90",
-        });
+        // List of country codes where ads should show (ISO Alpha-2 codes)
+        const adCountries = ['US', 'CA', 'GB', 'AU', 'DE', 'FR', 'IN', 'BR'];
         
-        monetag.adUnit({
-            id: "monetag_ad_2",
-            pid: "2894662", // Replace with your Monetag publisher ID
-            type: "banner",
-            format: "300x250",
-        });
+        // Function to load ads for specific regions
+        function loadAdsForRegion(countryCode) {
+            const adContainer = document.getElementById('ad-region-check');
+            
+            if (adCountries.includes(countryCode)) {
+                // If in target country, show Monetag ad
+                adContainer.innerHTML = '<div id="monetag_ad"></div>';
+                
+                monetag.adUnit({
+                    id: "monetag_ad",
+                    pid: "2894662", // Replace with your Monetag publisher ID
+                    type: "banner",
+                    format: "728x90",
+                });
+            } else {
+                // If not in target country, show alternative content
+                adContainer.innerHTML = `
+                    <div class="no-ad-message">
+                        <p>Thank you for visiting! No ads are displayed in your region.</p>
+                        <p>Consider supporting us through <a href="/donate">other means</a>.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Method 1: Get country from user's timezone (less accurate but works without API calls)
+        function getCountryFromTimezone() {
+            try {
+                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                if (timezone) {
+                    // Extract likely country code from timezone (e.g., "America/New_York" -> "US")
+                    return timezone.split('/')[0] === 'America' ? 'US' : timezone.split('/')[1].substring(0, 2);
+                }
+            } catch (e) {
+                console.error("Timezone detection failed:", e);
+            }
+            return null;
+        }
+        
+        // Method 2: Use IP geolocation API (more accurate)
+        function getCountryFromIP() {
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    loadAdsForRegion(data.country);
+                })
+                .catch(error => {
+                    console.error("IP geolocation failed:", error);
+                    // Fallback to timezone method
+                    loadAdsForRegion(getCountryFromTimezone() || 'XX');
+                });
+        }
+        
+        // Start region detection
+        getCountryFromIP();
     </script>
 </body>
 </html>
