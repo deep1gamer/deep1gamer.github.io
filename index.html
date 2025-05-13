@@ -2,114 +2,86 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="monetag" content="dc0e36df132dcf49abd4bfd997ba1965">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Region-Specific Ad Website</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MineServ - Minecraft Server App</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Poppins', sans-serif;
+            background-color: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 0;
         }
-        .ad-container {
-            margin: 20px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
+        header {
             text-align: center;
-            min-height: 250px;
-            background-color: #f9f9f9;
+            padding: 50px 0;
         }
-        .content {
+        h1 {
+            font-size: 3em;
+            margin: 0;
+            color: #61dafb;
+        }
+        p {
+            font-size: 1.2em;
             margin: 20px 0;
-            line-height: 1.6;
+            color: #ccc;
         }
-        .no-ad-message {
-            color: #666;
-            font-style: italic;
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            background-color: #61dafb;
+            color: #121212;
+            font-size: 1.2em;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #21a1d4;
+        }
+        .notification {
+            background-color: #333;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #222;
+        }
+        footer a {
+            color: #61dafb;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to My Region-Specific Ad Website</h1>
-    
-    <div class="content">
-        <p>This website shows ads only to visitors from specific regions. Visitors from other regions will see alternative content.</p>
-    </div>
-    
-    <div class="ad-container" id="ad-region-check">
-        <div class="no-ad-message">Checking your region...</div>
-    </div>
-    
-    <div class="content">
-        <h2>More Content</h2>
-        <p>Additional content that all visitors see regardless of their region.</p>
-    </div>
 
-    <!-- Monetag Ad Script -->
-    <script src="https://ligheechoagool.com/88/tag.min.js" data-zone="146991" async data-cfasync="false"></script>
-    <script src="https://s.monetag.com/loader.js"></script>
-    
-    <!-- Region detection and ad loading script -->
-    <script>
-        // List of country codes where ads should show (ISO Alpha-2 codes)
-        const adCountries = ['US', 'CA', 'GB', 'AU', 'DE', 'FR', 'IN', 'BR'];
-        
-        // Function to load ads for specific regions
-        function loadAdsForRegion(countryCode) {
-            const adContainer = document.getElementById('ad-region-check');
-            
-            if (adCountries.includes(countryCode)) {
-                // If in target country, show Monetag ad
-                adContainer.innerHTML = '<div id="monetag_ad"></div>';
-                
-                monetag.adUnit({
-                    id: "monetag_ad",
-                    pid: "2894662", // Replace with your Monetag publisher ID
-                    type: "banner",
-                    format: "728x90",
-                });
-            } else {
-                // If not in target country, show alternative content
-                adContainer.innerHTML = `
-                    <div class="no-ad-message">
-                        <p>Thank you for visiting! No ads are displayed in your region.</p>
-                        <p>Consider supporting us through <a href="/donate">other means</a>.</p>
-                    </div>
-                `;
-            }
-        }
-        
-        // Method 1: Get country from user's timezone (less accurate but works without API calls)
-        function getCountryFromTimezone() {
-            try {
-                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                if (timezone) {
-                    // Extract likely country code from timezone (e.g., "America/New_York" -> "US")
-                    return timezone.split('/')[0] === 'America' ? 'US' : timezone.split('/')[1].substring(0, 2);
-                }
-            } catch (e) {
-                console.error("Timezone detection failed:", e);
-            }
-            return null;
-        }
-        
-        // Method 2: Use IP geolocation API (more accurate)
-        function getCountryFromIP() {
-            fetch('https://ipapi.co/json/')
-                .then(response => response.json())
-                .then(data => {
-                    loadAdsForRegion(data.country);
-                })
-                .catch(error => {
-                    console.error("IP geolocation failed:", error);
-                    // Fallback to timezone method
-                    loadAdsForRegion(getCountryFromTimezone() || 'XX');
-                });
-        }
-        
-        // Start region detection
-        getCountryFromIP();
-    </script>
+<header>
+    <h1>MineServ</h1>
+    <p>Run Minecraft servers easily on PC and Android with MineServ.</p>
+    <a href="files/MineServ_Windows.exe" class="button">⬇ Download for Windows (.exe)</a>
+    <a href="files/MineServ_Android.apk" class="button">⬇ Download for Android (.apk)</a>
+</header>
+
+<div class="notification">
+    <h2>Latest Notification</h2>
+    <p>Latest update released! v1.2.0</p>
+    <p>Android version now supports Fabric.</p>
+</div>
+
+<footer>
+    <a href="changelog.html">Changelog</a> | 
+    <a href="contact.html">Contact Us</a>
+</footer>
+
 </body>
 </html>
+
