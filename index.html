@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="monetag" content="44206db4cf6966a54e41289aa90b0166">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MineServ - Ad Portal</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://fpyf8.com/88/tag.min.js" data-zone="147902" async data-cfasync="false"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #1e1e1e;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            color: #61dafb;
+        }
+        .section {
+            padding: 20px;
+        }
+        h2 {
+            color: #61dafb;
+        }
+        p, li {
+            color: #ccc;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        #ad-container {
+            background-color: #2a2a2a;
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #1e1e1e;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+     <h1>MineServ</h1>
+    <p>Run Minecraft servers easily on PC and Android with MineServ.</p>
+    <a href="files/MineServ_Windows.exe" class="button">⬇ Download for Windows (.exe)</a>
+    <a href="files/MineServ_Android.apk" class="button">⬇ Download for Android (.apk)</a>
+</header>
+
+<div class="section">
+    <h2>About the App</h2>
+    <p>The app allows you to create and manage Minecraft servers for free, although it's currently available only for Windows. A mobile version is under testing.</p>
+    <p>It requires a good PC to handle a Minecraft server, since it runs locally. We recommend at least <strong>8–12 GB of RAM</strong> for a 4 GB server, along with a good CPU and GPU.</p>
+    <p>For more details, you can visit the <a href="https://github.com/your-repo-link" target="_blank" style="color:#4fc3f7;">GitHub repository</a>.</p>
+</div>
+
+<div class="section">
+    <h2>How to Use the App</h2>
+    <ul>
+        <li>First install the server using the install button and wait until the terminal says "installed".</li>
+        <li>Then click the start button to launch the server.</li>
+        <li>The app has three tabs: <strong>Server Output</strong>, <strong>Plugins</strong>, <strong>Browser</strong>, and a <strong>Settings</strong> tab (currently inactive).</li>
+    </ul>
+</div>
+
+<div class="section">
+    <h2>Features</h2>
+    <ul>
+        <li>Create and manage Minecraft servers easily</li>
+        <li>Add and manage plugins</li>
+        <li>Web version available soon (runs on Google Colab, not your PC)</li>
+    </ul>
+</div>
+<a href="#" class="button" onclick="openRandomAd()">Support Us - Watch Ad</a>
+
+<footer>
+    <a href="changelog.html">Changelog</a> | 
+    <a href="contact.html">Contact Us</a>
+</footer>
+<script>
+    // Array of ad links
+   const adLinks = [
+        "https://otieu.com/4/9330611",
+        "https://otieu.com/4/9330602",
+        "https://otieu.com/4/9322243",
+        "https://otieu.com/4/9330602",
+        "https://otieu.com/4/9330603",
+        "https://otieu.com/4/9330604",
+        "https://otieu.com/4/9330607",
+        "https://otieu.com/4/9330605",
+        "https://otieu.com/4/9330608",
+        "https://otieu.com/4/9322249",
+        "https://otieu.com/4/9322243",
+        "https://otieu.com/4/9330610",
+    
+    ];
+
+    // Function to open a random ad and track the click
+    function openRandomAd() {
+        const link = adLinks[Math.floor(Math.random() * adLinks.length)];
+        
+        // Track the click with your backend (example URL)
+        fetch("https://your-tracking-endpoint.com/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ link: link })
+        });
+
+        // Open the random ad link in a new tab
+        window.open(link, "_blank");
+    }
+</script>
+</body>
+</html>
